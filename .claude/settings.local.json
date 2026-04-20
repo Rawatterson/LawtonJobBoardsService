@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:service-development.ordant.com)",
+      "Bash(curl -s -u \"staff:4t20Q58Djk\" \"https://service-development.ordant.com:8000/v3/api/documentation/index.php\" -k)",
+      "Bash(curl:*)",
+      "Bash(python3 -c ':*)",
+      "Bash(node:*)",
+      "Bash(curl -s -u \"staff:4t20Q58Djk\" \"https://service-development.ordant.com:8000/v3/api/documentation/index.php?type=json\" -k)",
+      "Read(//tmp/**)",
+      "Bash(rm \"C:/Users/Austin-Dev/Documents/Source/LawtonJobBoardsServices/LawtonJobBoardsServices/LawtonJobBoardsServices/Controllers/WeatherForecastController.cs\")",
+      "Bash(rm \"C:/Users/Austin-Dev/Documents/Source/LawtonJobBoardsServices/LawtonJobBoardsServices/LawtonJobBoardsServices/WeatherForecast.cs\")",
+      "Bash(powershell:*)",
+      "Bash(python3 -c \"import secrets; print\\(secrets.token_urlsafe\\(32\\)\\)\")",
+      "Bash(openssl rand:*)",
+      "Bash(dotnet build:*)",
+      "Read(//c/Users/Austin-Dev/.nuget/packages/scalar.aspnetcore/2.13.22/lib/**)",
+      "Bash(grep -v \"^--$\")",
+      "Bash(dotnet user-secrets:*)",
+      "Bash(dotnet run *)",
+      "Bash(taskkill -F -IM dotnet.exe)",
+      "Bash(awk '{print $2}')"
+    ]
+  }
+}
