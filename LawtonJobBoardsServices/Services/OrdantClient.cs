@@ -1,10 +1,11 @@
 using LawtonJobBoardsServices.Models.Ordant;
+using LawtonJobBoardsServices.Services.Interfaces;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
 
 namespace LawtonJobBoardsServices.Services;
 
-public class OrdantClient(HttpClient http, OrdantTokenService tokenService)
+public class OrdantClient(HttpClient http, OrdantTokenService tokenService) : IOrdantClient
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -73,6 +74,7 @@ public class OrdantClient(HttpClient http, OrdantTokenService tokenService)
         int limitPerPage = 100,
         bool? isComplete = null,
         int? stationId = null,
+        bool? hasCompletedDependencies = null,
         CancellationToken ct = default)
     {
         var query = new List<KeyValuePair<string, string?>>
@@ -86,6 +88,9 @@ public class OrdantClient(HttpClient http, OrdantTokenService tokenService)
 
         if (stationId.HasValue)
             query.Add(new("criteria[and][]", $"station eq {stationId.Value}"));
+
+        if (hasCompletedDependencies.HasValue)
+            query.Add(new("criteria[and][]", $"hasCompletedDependencies eq {hasCompletedDependencies.Value.ToString().ToLower()}"));
 
         query.Add(new("criteria[order][]", "stationSortOrder ASC"));
 

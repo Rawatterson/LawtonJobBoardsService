@@ -1,13 +1,14 @@
 using LawtonJobBoardsServices.Models.Dto;
 using LawtonJobBoardsServices.Models.Ordant;
 using LawtonJobBoardsServices.Services;
+using LawtonJobBoardsServices.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LawtonJobBoardsServices.Controllers;
 
 [ApiController]
 [Route("api/order-items")]
-public class OrderItemsController(OrdantClient ordant, DueStatusCalculator dueStatus) : ControllerBase
+public class OrderItemsController(IOrdantClient ordant, IDueStatusCalculator dueStatus) : ControllerBase
 {
     /// <summary>
     /// Returns a paged list of order items (jobs) ordered by due date ascending.

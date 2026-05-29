@@ -1,10 +1,11 @@
 using LawtonJobBoardsServices.Configuration;
 using LawtonJobBoardsServices.Models.Dto;
 using Microsoft.Extensions.Options;
+using LawtonJobBoardsServices.Services.Interfaces;
 
 namespace LawtonJobBoardsServices.Services;
 
-public class DueStatusCalculator(IOptions<OrdantSettings> settings)
+public class DueStatusCalculator(IOptions<OrdantSettings> settings) : IDueStatusCalculator
 {
     private readonly int _thresholdHours = settings.Value.DueSoonThresholdHours;
 

@@ -119,10 +119,62 @@ public class OrdantSchedulerJob
     public List<OrdantResource> Resources { get; set; } = [];
 }
 
+public record OrdantJobsSnapShot
+{
+    // Job fields
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public bool IsComplete { get; set; }
+    public string? Progress { get; set; }
+    public bool Timer { get; set; }
+    public string? TimeEstimated { get; set; }
+    // TimeActual is intentionally excluded: it is a running elapsed-time string
+    // that increments on every poll for active jobs, causing false-positive change events.
+
+    // Station fields
+    public int OrdantStationId { get; set; }
+    public string? StationName { get; set; }
+    public int? StationGroupId { get; set; }
+    public string? StationGroupName { get; set; }
+
+    // Sort
+    public string? SortOrder { get; set; }
+
+    // Order fields
+    public int? OrderId { get; set; }
+    public string? OrderInternalId { get; set; }
+    public string? OrderProjectName { get; set; }
+    public string? OrderStatusLabel { get; set; }
+    public string? OrderPriorityLabel { get; set; }
+    public string? OrderCustomerName { get; set; }
+    public DateTimeOffset? OrderDueDate { get; set; }
+    public string? OrderProgress { get; set; }
+
+    // Order item fields
+    public int? OrderItemId { get; set; }
+    public string? OrderItemDescription { get; set; }
+    public string? OrderItemSku { get; set; }
+    public string? OrderItemSortId { get; set; }
+    public int? OrderItemQty { get; set; }
+    public bool? OrderItemIsComplete { get; set; }
+    public string? OrderItemProgress { get; set; }
+    public DateTimeOffset? OrderItemDateDue { get; set; }
+    public DateTimeOffset? OrderItemDateShipBy { get; set; }
+    public DateTimeOffset? OrderItemDateProofDue { get; set; }
+}
+
+public class OrdantStationGroup
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? Color { get; set; }
+}
+
 public class OrdantStation
 {
     public int Id { get; set; }
     public string? Name { get; set; }
+    public OrdantStationGroup? Group { get; set; }
 }
 
 public class OrdantJobQueue
@@ -136,11 +188,15 @@ public class OrdantOrderItemRef
 {
     public int Id { get; set; }
     public string? Description { get; set; }
+    public string? Sku { get; set; }
+    public string? SortId { get; set; }
+    public int SortOrder { get; set; }
+    public int Qty { get; set; }
+    public bool IsComplete { get; set; }
+    public string? Progress { get; set; }
     public DateTimeOffset? DateDue { get; set; }
     public DateTimeOffset? DateProofDue { get; set; }
     public DateTimeOffset? DateShipBy { get; set; }
-    public string? SortId { get; set; }
-    public int SortOrder { get; set; }
     public OrdantOrderRef? Order { get; set; }
 }
 
@@ -150,6 +206,8 @@ public class OrdantOrderRef
     public int Id { get; set; }
     public string? InternalId { get; set; }
     public string? ProjectName { get; set; }
+    public DateTimeOffset? DueDate { get; set; }
+    public string? Progress { get; set; }
     /// <summary>Order type (e.g. "estimate", "order") — present in order-item responses.</summary>
     public string? Type { get; set; }
     public OrdantStatus? Status { get; set; }
@@ -200,3 +258,4 @@ public class OrdantOrderItemDetail : OrdantOrderItemSummary
     public string? Progress { get; set; }
     public OrdantItemPricing? Summary { get; set; }
 }
+

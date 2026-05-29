@@ -8,6 +8,8 @@ public class ResourcePlannerJobDto
     public string? Progress { get; set; }
     public int? StationId { get; set; }
     public string? StationName { get; set; }
+    public int? StationGroupId { get; set; }
+    public string? StationGroupName { get; set; }
     public int StationSortOrder { get; set; }
     public int SortOrder { get; set; }
     public bool HasCompletedDependencies { get; set; }
@@ -24,12 +26,19 @@ public class ResourcePlannerJobDto
     public string? OrderCustomerName { get; set; }
     public string? OrderCompanyName { get; set; }
     public DateTimeOffset? OrderDueDate { get; set; }
+    public string? OrderProgress { get; set; }
 
-    // From orderItem directly (may be more specific than order-level due date)
+    // From orderItem directly
     public int? OrderItemId { get; set; }
     public string? OrderItemDescription { get; set; }
+    public string? OrderItemSku { get; set; }
+    public string? OrderItemSortId { get; set; }
+    public int? OrderItemQty { get; set; }
+    public bool? OrderItemIsComplete { get; set; }
+    public string? OrderItemProgress { get; set; }
     public DateTimeOffset? OrderItemDateDue { get; set; }
     public DateTimeOffset? OrderItemDateShipBy { get; set; }
+    public DateTimeOffset? OrderItemDateProofDue { get; set; }
 
     public DueStatus DueStatus { get; set; }
     public List<string> ResourceTypes { get; set; } = [];

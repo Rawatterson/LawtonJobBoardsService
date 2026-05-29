@@ -1,13 +1,15 @@
 using LawtonJobBoardsServices.Models.Dto;
 using LawtonJobBoardsServices.Models.Ordant;
 using LawtonJobBoardsServices.Services;
+using LawtonJobBoardsServices.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using LawtonJobBoardsServices.Utilities; 
 
 namespace LawtonJobBoardsServices.Controllers;
 
 [ApiController]
 [Route("api/resource-planner")]
-public class ResourcePlannerController(OrdantClient ordant, DueStatusCalculator dueStatus) : ControllerBase
+public class ResourcePlannerController(IOrdantClient ordant, IDueStatusCalculator dueStatusCalculator) : ControllerBase
 {
     /// <summary>
     /// Returns scheduler jobs from the Ordant Resource Planner, sorted by
@@ -23,9 +25,10 @@ public class ResourcePlannerController(OrdantClient ordant, DueStatusCalculator 
         [FromQuery] int limitPerPage = 100,
         [FromQuery] bool? isComplete = null,
         [FromQuery] int? stationId = null,
+        [FromQuery] bool? hasCompletedDependencies = null,
         CancellationToken ct = default)
     {
-        var result = await ordant.GetSchedulerJobsAsync(page, limitPerPage, isComplete, stationId, ct);
+        var result = await ordant.GetSchedulerJobsAsync(page, limitPerPage, isComplete, stationId, hasCompletedDependencies, ct);
         if (result is null)
             return Ok(new PagedResultDto<ResourcePlannerJobDto>());
 
@@ -34,7 +37,7 @@ public class ResourcePlannerController(OrdantClient ordant, DueStatusCalculator 
             Count = result.Count,
             LimitPerPage = result.LimitPerPage,
             Offset = result.Offset,
-            ResultSet = result.ResultSet.Select(MapJob).ToList(),
+            ResultSet = result.ResultSet.Select(j => ResourcePlannerMapper.MapJob(j, dueStatusCalculator)).ToList(),
         });
     }
 
@@ -47,53 +50,6 @@ public class ResourcePlannerController(OrdantClient ordant, DueStatusCalculator 
         var job = await ordant.GetSchedulerJobAsync(jobId, ct);
         if (job is null)
             return NotFound();
-
-        return Ok(MapJob(job));
-    }
-
-    // ── Mapping ───────────────────────────────────────────────────────────────
-
-    private ResourcePlannerJobDto MapJob(OrdantSchedulerJob j)
-    {
-        var orderItem = j.JobQueue?.OrderItem;
-        var order = orderItem?.Order;
-
-        // Use the order-item-level due date for DueStatus; OrdantOrderRef inside a
-        // scheduler job response does not carry the order-level dueDate field.
-        var dueDateForStatus = orderItem?.DateDue;
-
-        return new ResourcePlannerJobDto
-        {
-            Id = j.Id,
-            Name = j.Name,
-            IsComplete = j.IsComplete,
-            Progress = j.Progress,
-            StationId = j.Station?.Id,
-            StationName = j.Station?.Name,
-            StationSortOrder = j.StationSortOrder,
-            SortOrder = j.SortOrder,
-            HasCompletedDependencies = j.HasCompletedDependencies,
-            TimeEstimated = j.TimeEstimated,
-            TimeActual = j.TimeActual,
-            Timer = j.Timer,
-            OrderId = order?.Id,
-            OrderInternalId = order?.InternalId,
-            OrderProjectName = order?.ProjectName,
-            OrderStatusLabel = order?.Status?.Value,
-            OrderPriorityLabel = order?.Priority?.Label,
-            OrderCustomerName = order?.Customer?.FullName,
-            OrderCompanyName = order?.Customer?.Company?.Name ?? order?.Customer?.Name,
-            OrderItemId = orderItem?.Id,
-            OrderItemDescription = orderItem?.Description,
-            OrderItemDateDue = orderItem?.DateDue,
-            OrderItemDateShipBy = orderItem?.DateShipBy,
-            DueStatus = dueStatus.Calculate(dueDateForStatus, j.IsComplete),
-            ResourceTypes = j.Resources
-                .Select(r => r.ResourceType)
-                .Where(rt => rt is not null)
-                .Select(rt => rt!)
-                .Distinct()
-                .ToList(),
-        };
+        return Ok(ResourcePlannerMapper.MapJob(job, dueStatusCalculator));
     }
 }

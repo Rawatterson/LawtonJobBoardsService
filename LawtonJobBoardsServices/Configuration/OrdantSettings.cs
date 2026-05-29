@@ -14,3 +14,13 @@ public class OrdantSettings
     /// </summary>
     public int DueSoonThresholdHours { get; set; } = 4;
 }
+
+public class JobBoardHubSettings
+{
+    public string HubUrl { get; set; } = string.Empty;
+}
+
+public class BoardStationsSettings
+{
+    public List<int> StationIds { get; set; } = [];
+}
