@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /postman
 /.postman
+
+#Ignore Claude files
+.claude/
+Claude.md
